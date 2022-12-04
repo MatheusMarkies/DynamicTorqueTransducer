@@ -72,8 +72,8 @@ public class MainFrameController implements Initializable {
 
         scheduledExecutorService.scheduleAtFixedRate(() -> {
             Platform.runLater(() -> {
-                if(getDataManager().getSensorA().getSensorSampleHistory().size() > 0)
-                chartIntegration.setAnalysisToChart();
+                //if(getDataManager().getSensorA().getSensorSampleHistory().size() > 0)
+                //chartIntegration.setAnalysisToChart();
             });
         }, 0, 20, TimeUnit.MILLISECONDS);
 

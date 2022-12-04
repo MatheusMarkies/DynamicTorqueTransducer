@@ -84,41 +84,21 @@ public class SensorDebug implements Initializable {
 
         XYChart.Series dataSeries1 = new XYChart.Series();
         dataSeries1.setName("Azul");
-        XYChart.Series dataSeries2 = new XYChart.Series();
-        dataSeries2.setName("Vermelho");
-        XYChart.Series dataSeries3 = new XYChart.Series();
-        dataSeries3.setName("Verde");
 
         if(sensors_chosebox.getValue().equals("Primario")) {
             dataSeries1.getData().add(new XYChart.Data("", (double) controller
-                    .getDataManager().getSensorA().getColorStats().getBlue()));
-            dataSeries2.getData().add(new XYChart.Data("", (double) controller
-                    .getDataManager().getSensorA().getColorStats().getRed()));
-            dataSeries3.getData().add(new XYChart.Data("", (double) controller
-                    .getDataManager().getSensorA().getColorStats().getGreen()));
+                    .getDataManager().getSensorA().getLightValue()));
         }else if(sensors_chosebox.getValue().equals("Secundario")) {
             dataSeries1.getData().add(new XYChart.Data("", (double) controller
-                    .getDataManager().getSensorB().getColorStats().getBlue()));
-            dataSeries2.getData().add(new XYChart.Data("", (double) controller
-                    .getDataManager().getSensorB().getColorStats().getRed()));
-            dataSeries3.getData().add(new XYChart.Data("", (double) controller
-                    .getDataManager().getSensorB().getColorStats().getGreen()));
+                    .getDataManager().getSensorB().getLightValue()));
         }else{
             dataSeries1.getData().add(new XYChart.Data("p", (double) controller
-                    .getDataManager().getSensorA().getColorStats().getBlue()));
-            dataSeries2.getData().add(new XYChart.Data("p", (double) controller
-                    .getDataManager().getSensorA().getColorStats().getRed()));
-            dataSeries3.getData().add(new XYChart.Data("p", (double) controller
-                    .getDataManager().getSensorA().getColorStats().getGreen()));
+                    .getDataManager().getSensorA().getLightValue()));
             dataSeries1.getData().add(new XYChart.Data("s", (double) controller
-                    .getDataManager().getSensorB().getColorStats().getBlue()));
-            dataSeries2.getData().add(new XYChart.Data("s", (double) controller
-                    .getDataManager().getSensorB().getColorStats().getRed()));
-            dataSeries3.getData().add(new XYChart.Data("s", (double) controller
-                    .getDataManager().getSensorB().getColorStats().getGreen()));
+                    .getDataManager().getSensorB().getLightValue()));
         }
 
-        String sensorInfo = "Sensor A" + "\n" + "Pulse: " +
+/*        String sensorInfo = "Sensor A" + "\n" + "Pulse: " +
                 controller
                         .getDataManager().getSensorA().getPulseCounter()
                 + "\n" + "Current Color: " + controller
@@ -139,11 +119,11 @@ public class SensorDebug implements Initializable {
                 + "\n" +  "Start Color: " + controller
                 .getDataManager().getSensorB().getStartColor()
                 + "\n" + "Discrepancia: " + Math.round(controller
-                .getDataManager().getSensorB().getDiscrepancy() * 100)+ "\n";
+                .getDataManager().getSensorB().getDiscrepancy() * 100)+ "\n";*/
 
         String axleInfo = "";
 
-        int dataSize = controller
+/*        int dataSize = controller
                 .getDataManager().getAxleDataList().size() -1;
 
         if(dataSize > 0) {
@@ -157,11 +137,9 @@ public class SensorDebug implements Initializable {
                     + "\n" + "Direction: " + axle.getRotationDirection();
         }
 
-        sensor_info.setText(sensorInfo + axleInfo);
+        sensor_info.setText(sensorInfo + axleInfo);*/
 
         sensor_colorstats_chart.getData().add(dataSeries1);
-        sensor_colorstats_chart.getData().add(dataSeries2);
-        sensor_colorstats_chart.getData().add(dataSeries3);
     }
 
     @FXML
@@ -197,7 +175,7 @@ public class SensorDebug implements Initializable {
 
     @FXML
     void onClickInResetStartColorButton(ActionEvent event) {
-        controller.getDataManager().reset();
+
     }
 
     public void reset() {

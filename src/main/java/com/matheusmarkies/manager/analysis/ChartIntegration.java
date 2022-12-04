@@ -52,7 +52,7 @@ public class ChartIntegration implements Runnable{
             //);
 
             //if(dataManager!=null)
-            for (DataManager.AxleData axleData : mainFrameController.getDataManager().getAxleDataList()) {
+            for (DataManager.AxleData axleData : mainFrameController.getDataManager().getAxleDataHistory()) {
                 XYChart.Data data = new XYChart.Data<String, Double>();
                 data = new XYChart.Data<String, Double>(axleData.getAddedTime()+ "", (double)axleData.getTorque());
                 dataList.add(data);
@@ -65,7 +65,7 @@ public class ChartIntegration implements Runnable{
         List<XYChart.Data<String, Double>> dataList = new ArrayList<>();
         List<Vector2D> dataVector = new ArrayList<>();
 
-        for (DataManager.AxleData axleData : mainFrameController.getDataManager().getAxleDataList()) {
+        for (DataManager.AxleData axleData : mainFrameController.getDataManager().getAxleDataHistory()) {
             dataVector.add(new Vector2D(axleData.getAddedTime() , axleData.getTorque()));
         }
 
@@ -87,12 +87,12 @@ public class ChartIntegration implements Runnable{
         XYChart.Series dataSeries1 = new XYChart.Series();
         dataSeries1.setName("Sensor A");
 
-        dataSeries1.getData().add(new XYChart.Data("0", (double) mainFrameController
+/*        dataSeries1.getData().add(new XYChart.Data("0", (double) mainFrameController
                 .getDataManager().getSensorA().getColorStats().getBlue()));
         dataSeries1.getData().add(new XYChart.Data("1", (double) mainFrameController
                 .getDataManager().getSensorA().getColorStats().getRed()));
         dataSeries1.getData().add(new XYChart.Data("2"  , (double) mainFrameController
-                .getDataManager().getSensorA().getColorStats().getGreen()));
+                .getDataManager().getSensorA().getColorStats().getGreen()));*/
 
 
         mainFrameController.getSensorDebug().getSensor_colorstats_chart().getData().add(dataSeries1);

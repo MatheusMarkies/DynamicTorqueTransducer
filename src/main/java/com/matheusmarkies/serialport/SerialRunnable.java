@@ -7,15 +7,11 @@ import com.matheusmarkies.controllers.MainFrameController;
 import com.matheusmarkies.manager.DataManager;
 import com.matheusmarkies.manager.analysis.SampleAnalysis;
 import com.matheusmarkies.manager.utilities.Vector2D;
-import com.matheusmarkies.objects.ColorStats;
-import javafx.scene.chart.XYChart;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Vector;
-import java.util.concurrent.ExecutionException;
 
 public class SerialRunnable implements SerialPortPacketListener, Runnable {
 
@@ -44,7 +40,7 @@ public class SerialRunnable implements SerialPortPacketListener, Runnable {
     }
 
     enum ReadType{
-        None,R,G,B,DT,SC
+        None,B,DT,SC
     }
 
     ReadType readType = null;
@@ -100,21 +96,12 @@ public class SerialRunnable implements SerialPortPacketListener, Runnable {
                         readType = ReadType.None;
                         getReadType = false;
                         break;
-                    case "R:":
-                        //System.out.println("R:");
-                        readType = ReadType.R;
-                        getReadType = false;
-                        break;
-                    case "G:":
-                        //System.out.println("G:");
-                        readType = ReadType.G;
-                        getReadType = false;
-                    break;
                     case "B:":
-                        //System.out.println("B:");
+                        //System.out.println("R:");
                         readType = ReadType.B;
                         getReadType = false;
                         break;
+
                     case "DT:":
                         //System.out.println("B:");
                         readType = ReadType.DT;
@@ -136,77 +123,17 @@ public class SerialRunnable implements SerialPortPacketListener, Runnable {
 
                                     getReadType = true;
                                     break;
-                                case R:
-                                    //System.out.println(readingSensorIndex+" R: "+Double.parseDouble(readingString));
-                                        if(controller.getDataManager().setColorStats(readingSensorIndex,1,Double.parseDouble(readingString)))
-                                        {
-                                            List<ColorStats> colorHistory = controller.getDataManager().getSensorA().getSensorSampleHistory();
-                                            ColorStats colorStats = controller.getDataManager().getSensorA().getColorStats();
-                                            if(readingSensorIndex == 1) {
-                                                colorHistory = controller.getDataManager().getSensorB().getSensorSampleHistory();
-                                                colorStats = controller.getDataManager().getSensorB().getColorStats();
-                                            }
-                                            Vector2D Parameters = SampleAnalysis.getSensorParameters(
-                                                   colorHistory,colorStats
-                                            );
-                                            controller.getDataManager().changeSensorStats(
-                                                    readingSensorIndex,(int)Parameters.x(),Parameters.y()
-                                                    );
-                                        }
-                                    getReadType = true;
-                                    break;
-                                case G:
-                                    //System.out.println(readingSensorIndex+" G: "+Double.parseDouble(readingString));
-                                    if(controller.getDataManager().setColorStats(readingSensorIndex,2,Double.parseDouble(readingString)))
-                                    {
-                                        List<ColorStats> colorHistory = controller.getDataManager().getSensorA().getSensorSampleHistory();
-                                        ColorStats colorStats = controller.getDataManager().getSensorA().getColorStats();
-                                        if(readingSensorIndex == 1) {
-                                            colorHistory = controller.getDataManager().getSensorB().getSensorSampleHistory();
-                                            colorStats = controller.getDataManager().getSensorB().getColorStats();
-                                        }
-                                        Vector2D Parameters = SampleAnalysis.getSensorParameters(
-                                                colorHistory,colorStats
-                                        );
-                                        controller.getDataManager().changeSensorStats(
-                                                readingSensorIndex,(int)Parameters.x(),Parameters.y()
-                                        );
-                                    }
+                                case B:
+
                                    getReadType = true;
                                 break;
-                                case B:
-                                    //System.out.println(readingSensorIndex+" B: "+Double.parseDouble(readingString));
-                                    if(controller.getDataManager().setColorStats(readingSensorIndex,0,Double.parseDouble(readingString)))
-                                    {
-                                        List<ColorStats> colorHistory = controller.getDataManager().getSensorA().getSensorSampleHistory();
-                                        ColorStats colorStats = controller.getDataManager().getSensorA().getColorStats();
-                                        if(readingSensorIndex == 1) {
-                                            colorHistory = controller.getDataManager().getSensorB().getSensorSampleHistory();
-                                            colorStats = controller.getDataManager().getSensorB().getColorStats();
-                                        }
-                                        Vector2D Parameters = SampleAnalysis.getSensorParameters(
-                                                colorHistory,colorStats
-                                        );
-                                        controller.getDataManager().changeSensorStats(
-                                                readingSensorIndex,(int)Parameters.x(),Parameters.y()
-                                        );
-                                    }
-                                    getReadType = true;
-                                    break;
+
                                 case DT:
-                                    controller.getDataManager().getSensorA().setDeltaTime(Double.parseDouble(readingString));
-                                    if(readingSensorIndex == 1) {
-                                        controller.getDataManager().getSensorB().setDeltaTime(Double.parseDouble(readingString));
-                                    }
+
                                     getReadType = true;
                                     break;
                                 case SC:
-                                    if(controller.getDataManager().getSensorA().getStartColor() == DataManager.Colors.None)
-                                    controller.getDataManager().getSensorA().setStartColor(DataManager.getColorByIndex((int)Double.parseDouble(readingString)));
-                                    if(readingSensorIndex == 1) {
-                                        if(controller.getDataManager().getSensorB().getStartColor() == DataManager.Colors.None)
-                                        controller.getDataManager().getSensorB().setStartColor(DataManager.getColorByIndex((int)Double.parseDouble(readingString)));
-                                    }
+
                                     getReadType = true;
                                     break;
                             }

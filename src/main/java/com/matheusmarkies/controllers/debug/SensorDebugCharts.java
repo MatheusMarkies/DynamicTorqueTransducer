@@ -1,20 +1,13 @@
 package com.matheusmarkies.controllers.debug;
 
 import com.matheusmarkies.controllers.MainFrameController;
-import com.matheusmarkies.manager.DataManager;
 import com.matheusmarkies.manager.analysis.SampleAnalysis;
 import com.matheusmarkies.manager.utilities.Vector2D;
-import com.matheusmarkies.objects.ColorStats;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.scene.chart.*;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.paint.Color;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -86,40 +79,14 @@ public class SensorDebugCharts implements Initializable {
                 Platform.runLater(() -> {
                     reset();
                     int chartRange = 8;
-                    if(debugSensor.equals("Primario")) {
                         XYChart.Series<String, Double> blueSeries = new XYChart.Series<String, Double>();
                         blueSeries.getData().addAll(addEntityBlueToChart(true,chartRange));
                         XYChart.Series<String, Double> redSeries = new XYChart.Series<String, Double>();
                         redSeries.getData().addAll(addEntityRedToChart(true,chartRange));
-                        XYChart.Series<String, Double> greenSeries = new XYChart.Series<String, Double>();
-                        greenSeries.getData().addAll(addEntityGreenToChart(true,chartRange));
+
 
                         change_rate_linechart.getData().addAll(blueSeries);
                         change_rate_linechart.getData().addAll(redSeries);
-                        change_rate_linechart.getData().addAll(greenSeries);
-
-                        change_rate_areachart.getData().addAll(blueSeries);
-                        change_rate_areachart.getData().addAll(redSeries);
-                        change_rate_areachart.getData().addAll(greenSeries);
-                    }else if(debugSensor.equals("Secundario")) {
-                        XYChart.Series<String, Double> blueSeries = new XYChart.Series<String, Double>();
-                        blueSeries.getData().addAll(addEntityBlueToChart(false,chartRange));
-                        XYChart.Series<String, Double> redSeries = new XYChart.Series<String, Double>();
-                        redSeries.getData().addAll(addEntityRedToChart(false,chartRange));
-                        XYChart.Series<String, Double> greenSeries = new XYChart.Series<String, Double>();
-                        greenSeries.getData().addAll(addEntityGreenToChart(false,chartRange));
-
-                        change_rate_linechart.getData().addAll(blueSeries);
-                        change_rate_linechart.getData().addAll(redSeries);
-                        change_rate_linechart.getData().addAll(greenSeries);
-
-                        change_rate_areachart.getData().addAll(blueSeries);
-                        change_rate_areachart.getData().addAll(redSeries);
-                        change_rate_areachart.getData().addAll(greenSeries);
-                    }else {
-
-                    }
-
                 });
             }, 0, 20, TimeUnit.MILLISECONDS);
 
@@ -128,25 +95,15 @@ public class SensorDebugCharts implements Initializable {
 
     public Collection<XYChart.Data<String, Double>> addEntityRedToChart(boolean A,int size) {
         List<XYChart.Data<String, Double>> dataList = new ArrayList<>();
-
-        List<ColorStats> colorStatsList = SampleAnalysis.movingAverageFilter(controller.getDataManager().getSensorA().getSensorSampleHistory(), 1);
-
-        int historySize = colorStatsList.size();
+        int historySize = controller.getDataManager().getSensorA().getLightValueHistory().size();
         int startChart = Math.max(historySize-size,0);
 
         List<Vector2D> vectorList = new ArrayList<>();
         for (int i = startChart;i< historySize;i++) {
-            if(A) {
-                Vector2D
-                        data = new Vector2D(i
-                        , (double) colorStatsList.get(i).getRed()/getSensorMaxValue(colorStatsList).x());
-                vectorList.add(data);
-            }else{
-                Vector2D
-                        data = new Vector2D(i
-                        , (double) colorStatsList.get(i).getRed()/getSensorMaxValue(colorStatsList).x());
-                vectorList.add(data);
-            }
+            Vector2D
+                    data = new Vector2D(i
+                    , controller.getDataManager().getSensorA().getLightValueHistory().get(i));
+            vectorList.add(data);
         }
 
         //vectorList = SampleAnalysis.getReorderedList(vectorList);
@@ -160,57 +117,17 @@ public class SensorDebugCharts implements Initializable {
 
     public Collection<XYChart.Data<String, Double>> addEntityBlueToChart(boolean A,int size) {
         List<XYChart.Data<String, Double>> dataList = new ArrayList<>();
-
-        List<ColorStats> colorStatsList = SampleAnalysis.movingAverageFilter(controller.getDataManager().getSensorA().getSensorSampleHistory(), 1);
-
-        int historySize = colorStatsList.size();
+        int historySize = controller.getDataManager().getSensorB().getLightValueHistory().size();
         int startChart = Math.max(historySize-size,0);
 
         List<Vector2D> vectorList = new ArrayList<>();
         for (int i = startChart;i< historySize;i++) {
-            if(A) {
-                Vector2D
-                        data = new Vector2D(i
-                        , (double) colorStatsList.get(i).getBlue()/getSensorMaxValue(colorStatsList).z());
-                vectorList.add(data);
-            }else{
-                Vector2D
-                        data = new Vector2D(i
-                        , (double) colorStatsList.get(i).getBlue()/getSensorMaxValue(colorStatsList).z());
-                vectorList.add(data);
-            }
-        }
 
-        //vectorList = SampleAnalysis.getReorderedList(vectorList);
+            Vector2D
+                    data = new Vector2D(i
+                    , controller.getDataManager().getSensorB().getLightValueHistory().get(i));
+            vectorList.add(data);
 
-        for (Vector2D vec : vectorList) {
-            dataList.add(new XYChart.Data("" + vec.x(), (double) vec.y()));
-        }
-
-        return dataList;
-    }
-
-    public Collection<XYChart.Data<String, Double>> addEntityGreenToChart(boolean A,int size) {
-        List<XYChart.Data<String, Double>> dataList = new ArrayList<>();
-
-        List<ColorStats> colorStatsList = SampleAnalysis.movingAverageFilter(controller.getDataManager().getSensorA().getSensorSampleHistory(), 1);
-
-        int historySize = colorStatsList.size();
-        int startChart = Math.max(historySize-size,0);
-
-        List<Vector2D> vectorList = new ArrayList<>();
-        for (int i = startChart;i< historySize;i++) {
-            if(A) {
-                Vector2D
-                        data = new Vector2D(i
-                        , (double) colorStatsList.get(i).getGreen()/getSensorMaxValue(colorStatsList).y());
-                vectorList.add(data);
-            }else{
-                Vector2D
-                data = new Vector2D(i
-                        , (double) colorStatsList.get(i).getGreen()/getSensorMaxValue(colorStatsList).y());
-                vectorList.add(data);
-            }
         }
 
         //vectorList = SampleAnalysis.getReorderedList(vectorList);

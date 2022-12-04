@@ -8,29 +8,17 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class Sensor {
-
-    private DataManager.Colors startColor = DataManager.Colors.None;
-    private DataManager.Colors currentColor = DataManager.Colors.None;
-    private DataManager.Colors oldColor = DataManager.Colors.None;
-
-    private int pulseStartColorCounter;
-    private int pulseIntermediateColorCounter;
+public class  Sensor {
     private int pulseCounter;
 
     private double deltaTime;
-    private double rotationDeltaTime;
     private double globalDeltaTime;
-    private double discrepancy;
-
+    private double rotationDeltaTime;
+    private double lightValue;
+    List<Double> lightValueHistory = new ArrayList<>();
     private double sensorPosition;
-
     public Date previousAddedTime = new Date();
     public Date startTime = new Date();
-
-    public ColorStats colorStats = new ColorStats();
-    private List<ColorStats> sensorSampleHistory = new ArrayList<>();
-
     private Transducer transducer;
 
     public Sensor(Transducer transducer) {
@@ -53,7 +41,7 @@ public class Sensor {
     }
 
     double oldDiscrepancy = 0;
-    public boolean pulseRegister(double discrepancy){
+    public boolean pulseRegister(double lightValue){
         LocalTime localTimeNow = LocalTime.now();
 
         LocalDateTime localTime = localTimeNow.atDate(LocalDate.now());
@@ -67,30 +55,12 @@ public class Sensor {
         System.out.println("previousAddedTime "+ previousAddedTime.getTime());
         System.out.println();
 */
-        rotationDeltaTime += deltaTime;
         globalDeltaTime = Date.from(instant).getTime()-startTime.getTime();
         previousAddedTime = (Date.from(instant));
 
-        oldDiscrepancy = this.discrepancy;
-        this.discrepancy = discrepancy;
+        this.lightValue = lightValue;
+        this.lightValueHistory.add(lightValue);
         return addPulse();
-    }
-
-    public DataManager.Colors getStartColor() {
-        return startColor;
-    }
-
-    public void setStartColor(DataManager.Colors startColor) {
-        this.startColor = startColor;
-    }
-
-    public DataManager.Colors getCurrentColor() {
-        return currentColor;
-    }
-
-    public void setCurrentColor(DataManager.Colors currentColor) {
-        this.oldColor = this.currentColor;
-        this.currentColor = currentColor;
     }
 
     public int getPulseCounter() {
@@ -104,32 +74,11 @@ public class Sensor {
     boolean lock = false;
 
     public boolean addPulse() {
-        if (this.oldColor != this.currentColor){
-            this.pulseIntermediateColorCounter++;
-            this.pulseCounter++;
-            sensorPosition += 360/transducer.getTracksNumber().getValue();
-            if (this.currentColor == this.startColor && !lock) {
-                this.pulseIntermediateColorCounter = 0;
-                this.pulseStartColorCounter++;
-                //sensorPosition = 0;
-                lock = true;
-            }else if(this.currentColor != this.startColor)
-                lock = false;
-        }
-            // else {
-            //setRotationDeltaTime(0);
-            //this.pulseIntermediateColorCounter = 0;
-            //this.pulseStartColorCounter = 0;
-            //this.pulseCounter = 0;
-        //}
-        if(sensorPosition >= 360)
-            sensorPosition=0;
-        //System.out.println(pulseCounter);
+
         if (transducer != null) {
-            int tracks = (int)transducer.getTracksNumber().getValue()/3;
-            if((pulseStartColorCounter >= tracks)) {
+            int tracks = (int)transducer.getTracksNumber().getValue();
+            if((pulseCounter >= tracks)) {
                 this.pulseCounter = 0;
-                this.pulseStartColorCounter = 0;
                 sensorPosition = 0;
                 //System.out.println("Volta Completa " + (getRotationDeltaTime()/1000));
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
@@ -166,60 +115,12 @@ public class Sensor {
         this.previousAddedTime = previousAddedTime;
     }
 
-    public double getDiscrepancy() {
-        return discrepancy;
+    public double getLightValue() {
+        return lightValue;
     }
 
-    public void setDiscrepancy(double discrepancy) {
-        this.discrepancy = discrepancy;
-    }
-
-    public double getRotationDeltaTime() {
-        return rotationDeltaTime;
-    }
-
-    public void setRotationDeltaTime(double rotationDeltaTime) {
-        this.rotationDeltaTime = rotationDeltaTime;
-    }
-
-    public ColorStats getColorStats() {
-        return colorStats;
-    }
-
-    public void setColorStats(ColorStats colorStats) {
-        this.colorStats = colorStats;
-    }
-
-    public List<ColorStats> getSensorSampleHistory() {
-        return sensorSampleHistory;
-    }
-
-    public DataManager.Colors getOldColor() {
-        return oldColor;
-    }
-
-    public void setOldColor(DataManager.Colors oldColor) {
-        this.oldColor = oldColor;
-    }
-
-    public void setSensorSampleHistory(List<ColorStats> sensorSampleHistory) {
-        this.sensorSampleHistory = sensorSampleHistory;
-    }
-
-    public int getPulseStartColorCounter() {
-        return pulseStartColorCounter;
-    }
-
-    public void setPulseStartColorCounter(int pulseStartColorCounter) {
-        this.pulseStartColorCounter = pulseStartColorCounter;
-    }
-
-    public int getPulseIntermediateColorCounter() {
-        return pulseIntermediateColorCounter;
-    }
-
-    public void setPulseIntermediateColorCounter(int pulseIntermediateColorCounter) {
-        this.pulseIntermediateColorCounter = pulseIntermediateColorCounter;
+    public void setLightValue(double lightValue) {
+        this.lightValue = lightValue;
     }
 
     public double getSensorPosition() {
@@ -238,18 +139,30 @@ public class Sensor {
         this.rotationAddedTime = rotationAddedTime;
     }
 
+    public double getRotationDeltaTime() {
+        return rotationDeltaTime;
+    }
+
+    public void setRotationDeltaTime(double rotationDeltaTime) {
+        this.rotationDeltaTime = rotationDeltaTime;
+    }
+
+    public List<Double> getLightValueHistory() {
+        return lightValueHistory;
+    }
+
+    public void setLightValueHistory(List<Double> lightValueHistory) {
+        this.lightValueHistory = lightValueHistory;
+    }
+
     @Override
     public String toString() {
         return "Sensor{" +
-                "startColor=" + startColor +
-                ", currentColor=" + currentColor +
                 ", pulseCounter=" + pulseCounter +
                 ", deltaTime=" + deltaTime +
-                ", rotationDeltaTime=" + rotationDeltaTime +
                 ", globalDeltaTime=" + globalDeltaTime +
-                ", discrepancy=" + discrepancy +
+                ", lightValue=" + lightValue +
                 ", previousAddedTime=" + previousAddedTime +
-                ", colorStats=" + colorStats.toString() +
                 ", startTime=" + startTime +
                 ", transducer=" + transducer +
                 '}';
