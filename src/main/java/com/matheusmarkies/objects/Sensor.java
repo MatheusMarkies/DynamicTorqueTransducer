@@ -25,7 +25,7 @@ public class  Sensor {
         System.err.println("Create new Sensor!");
 
         this.transducer = transducer;
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss.SSSSSSSSS");
         LocalTime localTimeNow = LocalTime.now();
 
         LocalDateTime localTime = localTimeNow.atDate(LocalDate.now());
@@ -81,7 +81,7 @@ public class  Sensor {
                 this.pulseCounter = 0;
                 sensorPosition = 0;
                 //System.out.println("Volta Completa " + (getRotationDeltaTime()/1000));
-                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss.SSSSSSSSS");
                 LocalTime localTimeNow = LocalTime.now();
 
                 LocalDateTime localTime = localTimeNow.atDate(LocalDate.now());
