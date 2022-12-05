@@ -96,12 +96,12 @@ void motorController() {
 }
 
 void printSensor(String sensor, float value) {
-  static uint32_t prev_ms = millis();
+  static uint32_t prev_ms = micros();
   Serial.println(sensor);
   Serial.println("SC:");
   Serial.println(startColor);
   Serial.println("DT:");
-  Serial.println((millis() - prev_ms));
+  Serial.println((micros() - prev_ms));
   Serial.println("B:");
   Serial.println(value);
 
