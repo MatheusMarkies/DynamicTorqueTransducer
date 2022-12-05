@@ -82,7 +82,7 @@ public class SerialRunnable implements SerialPortPacketListener, Runnable {
                     //}
                 }catch (Exception exception){}
 
-                //System.out.println(readingString);
+                System.out.println(readingString);
                 switch (inputString) {
 
                     case "a":

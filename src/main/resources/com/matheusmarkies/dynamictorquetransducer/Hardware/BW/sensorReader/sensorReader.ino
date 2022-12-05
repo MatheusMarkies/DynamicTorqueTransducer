@@ -1,12 +1,12 @@
-//#define SensorA A0
-//#define SensorB A1
-#define SensorA 2
-#define SensorB 3
+#define SensorA A0
+#define SensorB A1
+//#define SensorA 2
+//#define SensorB 3
 
-int motorASpeed = 3;
+int motorASpeed = 5;
 int motorADir = 0;
-int L293D_AA = 4;
-int L293D_AB = 5;
+int L293D_AA = 6;
+int L293D_AB = 7;
 
 int motorBSpeed = 8;
 int motorBDir = 0;
@@ -24,7 +24,7 @@ int L293D_BB = 10;
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   pinMode(motorASpeed, OUTPUT);
   pinMode(L293D_AA, OUTPUT);
@@ -34,36 +34,40 @@ void setup()
   pinMode(L293D_BA, OUTPUT);
   pinMode(L293D_BB, OUTPUT);
 
-  pinMode(SensorA, INPUT);
-  pinMode(SensorB, INPUT);
+  //pinMode(SensorA, INPUT);
+  //pinMode(SensorB, INPUT);
 
-  attachInterrupt(digitalPinToInterrupt(SensorA), attachInterruptSensorA, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(SensorB), attachInterruptSensorB, CHANGE);
+  attachInterrupt(SensorA, attachInterruptSensorA, CHANGE);
+  attachInterrupt(SensorB, attachInterruptSensorB, CHANGE);
 
   pinMode(Aright, INPUT);
   pinMode(Aleft, INPUT);
   pinMode(Bright, INPUT);
   pinMode(Bleft, INPUT);
 
-  Wire.begin();
+  //Wire.begin();
 }
-
+float a,b;
+float oldB = 0;
+float cycle=0;
 void loop()
 {
+  static uint32_t prev_ms = micros();
   motorController();
-  float a,b;
-  //a=analogRead(SensorA); 
-  //b=analogRead(SensorB); 
-  //printSensor("a",a);
-  //printSensor("b",b);
+  //float a,b;
+  a=analogRead(SensorA);
+  b=analogRead(SensorB);
+
+  printSensor("a",a);
+  printSensor("b",b);
 }
 
 void attachInterruptSensorA(){
-    a=analogRead(SensorA); 
+    a=analogRead(SensorA);
     printSensor("a",a);
 }
 void attachInterruptSensorB(){
-    b=analogRead(SensorB); 
+    b=analogRead(SensorB);
     printSensor("b",b);
 }
 
@@ -96,14 +100,14 @@ void motorController() {
 }
 
 void printSensor(String sensor, float value) {
-  static uint32_t prev_ms = millis();
+  //static uint32_t prev_ms = micros();
   Serial.println(sensor);
-  Serial.println("SC:");
-  Serial.println(startColor);
-  Serial.println("DT:");
-  Serial.println((millis() - prev_ms));
+  //Serial.println("SC:");
+  //Serial.println(startColor);
+  //Serial.println("DT:");
+  //Serial.println((micros() - prev_ms));
   Serial.println("B:");
   Serial.println(value);
 
-  prev_ms = millis();
+  //prev_ms = micros();
 }

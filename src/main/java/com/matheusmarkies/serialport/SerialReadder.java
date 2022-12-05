@@ -10,7 +10,7 @@ public class SerialReadder{
     private SerialPort serialPort;
     private String serialPortName;
 
-    static int PORT_RATE = 9600;
+    static int PORT_RATE = 115200;
     public static int PACKET_SIZE_IN_BYTES = 8;
     private MainFrameController controller;
 
