@@ -82,7 +82,7 @@ public class SerialRunnable implements SerialPortPacketListener, Runnable {
                     //}
                 }catch (Exception exception){}
 
-                //System.out.println(readingString);
+                System.out.println(inputString);
                 switch (inputString) {
 
                     case "a":
@@ -124,7 +124,7 @@ public class SerialRunnable implements SerialPortPacketListener, Runnable {
                                     getReadType = true;
                                     break;
                                 case B:
-
+                                    controller.getDataManager().changeSensorStats(readingSensorIndex, Double.parseDouble(inputString));
                                    getReadType = true;
                                 break;
 

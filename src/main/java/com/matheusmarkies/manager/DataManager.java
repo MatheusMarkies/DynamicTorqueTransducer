@@ -106,18 +106,53 @@ public class DataManager {
 
     private List<AxleData> axleDataHistory = new ArrayList<>();
 
-    public void changeSensorStats(int sensorIndex, int colorIndex, double discrepancy){
+    enum Condition{
+        INCREASE, DECREASE, NONE
+    }
+
+    Condition currentCondition = Condition.NONE;
+
+    public void changeSensorStats(int sensorIndex, double brightness){
+        double oldSensorBrightness = 0;
+        Sensor currentSensor = null;
         switch (sensorIndex){
             case 0:
-
+                currentSensor = sensorA;
                 break;
             case 1:
-
+                currentSensor = sensorB;
                 break;
             default:
                 break;
         }
 
+        if(currentSensor != null) {
+            AxleData axleData = new AxleData();
+            oldSensorBrightness = currentSensor.getLightValue();
+
+            double changeRate = (brightness - oldSensorBrightness)/Math.abs((brightness - oldSensorBrightness));
+
+            if(changeRate >= 1) {
+                if (currentCondition == Condition.NONE)
+                    currentCondition = Condition.INCREASE;
+                else if(currentCondition == Condition.DECREASE){
+//VALE
+                    currentSensor.addValley();
+                }
+            currentCondition = Condition.INCREASE;
+            }else{
+                if (currentCondition == Condition.NONE)
+                    currentCondition = Condition.DECREASE;
+                else if(currentCondition == Condition.INCREASE){
+//PICO
+                    currentSensor.addPeak();
+                }
+            currentCondition = Condition.DECREASE;
+            }
+
+            currentSensor.pulseRegister(brightness);
+            axleDataHistory.add(axleData);
+        }
     }
 
     boolean addedSensorA = false;
