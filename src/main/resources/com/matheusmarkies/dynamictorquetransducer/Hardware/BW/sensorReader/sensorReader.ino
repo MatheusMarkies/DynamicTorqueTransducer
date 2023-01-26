@@ -88,7 +88,7 @@ void motorController() {
 
   if (analogRead(potBPin) < 512) {
     speedB = map(speedB, 512, 0, 850, 1023);
-    motorBDir = 1;
+    motorBDir = 1;//
   } else {
     speedB = map(speedB, 512, 1023, 850, 1023);
     motorBDir = 0;
