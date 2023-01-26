@@ -112,47 +112,90 @@ public class DataManager {
 
     Condition currentCondition = Condition.NONE;
 
-    public void changeSensorStats(int sensorIndex, double brightness){
-        double oldSensorBrightness = 0;
+    List<Double> sensorAAvarage=new ArrayList<>();
+    List<Double> sensorBAvarage=new ArrayList<>();
+    public void changeSensorStats(int sensorIndex, double brightness, int length){
         Sensor currentSensor = null;
         switch (sensorIndex){
             case 0:
                 currentSensor = sensorA;
+                sensorAAvarage.add(brightness);
+                if(sensorAAvarage.size() >= length){
+                    double value =0;
+                    for (double s:
+                            sensorAAvarage) {
+                        value += s/sensorAAvarage.size();
+                    }
+                    //System.out.println(value);
+                    changeSensorInfo(value,currentSensor);
+                    sensorAAvarage.clear();
+                }
                 break;
             case 1:
                 currentSensor = sensorB;
+                sensorBAvarage.add(brightness);
+                if(sensorBAvarage.size() >= length){
+                    double value =0;
+                    for (double s:
+                         sensorBAvarage) {
+                        value += s/sensorBAvarage.size();
+                    }
+                    changeSensorInfo(value,currentSensor);
+                    sensorBAvarage.clear();
+                }
                 break;
             default:
                 break;
         }
 
-        if(currentSensor != null) {
-            AxleData axleData = new AxleData();
-            oldSensorBrightness = currentSensor.getLightValue();
+    }
+int pulse = 0;
+    int rotation;
+    void changeSensorInfo(double brightness, Sensor currentSensor) {
+        double oldSensorBrightness = 0;
+        AxleData axleData = new AxleData();
+        oldSensorBrightness = currentSensor.getLightValue();
 
-            double changeRate = (brightness - oldSensorBrightness)/Math.abs((brightness - oldSensorBrightness));
+        double changeRate = 0;
 
-            if(changeRate >= 1) {
-                if (currentCondition == Condition.NONE)
-                    currentCondition = Condition.INCREASE;
-                else if(currentCondition == Condition.DECREASE){
+        if (brightness != oldSensorBrightness && Math.abs((brightness - oldSensorBrightness)) > 10)
+            changeRate = (brightness - oldSensorBrightness) / Math.abs((brightness - oldSensorBrightness));
+        else changeRate = 0;
+
+        //if (currentSensor == sensorB)
+            //System.out.println(changeRate);
+
+        if (changeRate >= 1) {
+            if (currentCondition == Condition.NONE)
+                currentCondition = Condition.INCREASE;
+            else if (currentCondition == Condition.DECREASE) {
 //VALE
-                    currentSensor.addValley();
+                if(currentSensor == sensorB) {
+                    pulse++;
+                    System.out.println(pulse);
+                    if (pulse >= 8) {
+                        rotation++;
+                        System.out.println(((rotation)/(currentSensor.getGlobalDeltaTime()/60000)));
+                        pulse=0;
+                    }
                 }
-            currentCondition = Condition.INCREASE;
-            }else{
-                if (currentCondition == Condition.NONE)
-                    currentCondition = Condition.DECREASE;
-                else if(currentCondition == Condition.INCREASE){
-//PICO
-                    currentSensor.addPeak();
-                }
-            currentCondition = Condition.DECREASE;
+                currentSensor.addValley();
             }
+            currentCondition = Condition.INCREASE;
+        } else if (changeRate != 0) {
+            if (currentCondition == Condition.NONE)
+                currentCondition = Condition.DECREASE;
+            else if (currentCondition == Condition.INCREASE) {
+//PICO
+                //if(currentSensor == sensorA)
+                    //System.out.println("peak");
+                currentSensor.addPeak();
+            }
+            currentCondition = Condition.DECREASE;
+        } else currentCondition = Condition.NONE;
 
-            currentSensor.pulseRegister(brightness);
-            axleDataHistory.add(axleData);
-        }
+        currentSensor.pulseRegister(brightness);
+        axleDataHistory.add(axleData);
     }
 
     boolean addedSensorA = false;
