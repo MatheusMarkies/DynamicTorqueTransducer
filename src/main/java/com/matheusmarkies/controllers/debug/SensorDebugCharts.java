@@ -78,7 +78,7 @@ public class SensorDebugCharts implements Initializable {
             scheduledExecutorService.scheduleAtFixedRate(() -> {
                 Platform.runLater(() -> {
                     reset();
-                    int chartRange = 8;
+                    int chartRange = 100;
                         XYChart.Series<String, Double> blueSeries = new XYChart.Series<String, Double>();
                         blueSeries.getData().addAll(addEntityBlueToChart(true,chartRange));
                         XYChart.Series<String, Double> redSeries = new XYChart.Series<String, Double>();
@@ -88,7 +88,7 @@ public class SensorDebugCharts implements Initializable {
                         change_rate_linechart.getData().addAll(blueSeries);
                         change_rate_linechart.getData().addAll(redSeries);
                 });
-            }, 0, 20, TimeUnit.MILLISECONDS);
+            }, 0, 1, TimeUnit.MILLISECONDS);
 
         });
     }
@@ -97,12 +97,12 @@ public class SensorDebugCharts implements Initializable {
         List<XYChart.Data<String, Double>> dataList = new ArrayList<>();
         int historySize = controller.getDataManager().getSensorA().getLightValueHistory().size();
         int startChart = Math.max(historySize-size,0);
-
+        double maxValue = getSensorMaxValue(controller.getDataManager().getSensorA().getLightValueHistory(), 10);
         List<Vector2D> vectorList = new ArrayList<>();
         for (int i = startChart;i< historySize;i++) {
             Vector2D
                     data = new Vector2D(i
-                    , controller.getDataManager().getSensorA().getLightValueHistory().get(i));
+                    , controller.getDataManager().getSensorA().getLightValueHistory().get(i)/maxValue);
             vectorList.add(data);
         }
 

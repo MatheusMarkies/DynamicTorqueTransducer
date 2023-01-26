@@ -63,6 +63,16 @@ public class  Sensor {
         return addPulse();
     }
 
+    int peak = 0;
+    int valley = 0;
+
+    public void addPeak(){
+        peak ++;
+    }
+    public void addValley(){
+        valley ++;
+    }
+
     public int getPulseCounter() {
         return pulseCounter;
     }
