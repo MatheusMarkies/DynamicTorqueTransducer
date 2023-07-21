@@ -1,113 +1,50 @@
-#define SensorA A0
-#define SensorB A1
-//#define SensorA 2
-//#define SensorB 3
+#include<ADS1115_WE.h>
+#include<Wire.h>
+#define I2C_ADDRESS 0x48
 
-int motorASpeed = 5;
-int motorADir = 0;
-int L293D_AA = 6;
-int L293D_AB = 7;
+ADS1115_WE adc = ADS1115_WE(I2C_ADDRESS);
 
-int motorBSpeed = 8;
-int motorBDir = 0;
-int L293D_BA = 9;
-int L293D_BB = 10;
+#include <FIR.h>
 
-#define Aright 44
-#define Aleft 45
+FIR<float, 8> fir;
 
-#define Bright 46
-#define Bleft 47
-
-#define potAPin A2
-#define potBPin A3
-
-void setup()
-{
+void setup() {
+  Wire.begin();
   Serial.begin(115200);
-
-  pinMode(motorASpeed, OUTPUT);
-  pinMode(L293D_AA, OUTPUT);
-  pinMode(L293D_AB, OUTPUT);
-
-  pinMode(motorBSpeed, OUTPUT);
-  pinMode(L293D_BA, OUTPUT);
-  pinMode(L293D_BB, OUTPUT);
-
-  //pinMode(SensorA, INPUT);
-  //pinMode(SensorB, INPUT);
-
-  attachInterrupt(SensorA, attachInterruptSensorA, CHANGE);
-  attachInterrupt(SensorB, attachInterruptSensorB, CHANGE);
-
-  pinMode(Aright, INPUT);
-  pinMode(Aleft, INPUT);
-  pinMode(Bright, INPUT);
-  pinMode(Bleft, INPUT);
-
-  //Wire.begin();
-}
-float a,b;
-float oldB = 0;
-float cycle=0;
-void loop()
-{
-  static uint32_t prev_ms = micros();
-  motorController();
-  //float a,b;
-  a=analogRead(SensorA);
-  b=analogRead(SensorB);
-
-  printSensor("a",a);
-  printSensor("b",b);
-}
-
-void attachInterruptSensorA(){
-    a=analogRead(SensorA);
-    printSensor("a",a);
-}
-void attachInterruptSensorB(){
-    b=analogRead(SensorB);
-    printSensor("b",b);
-}
-
-int speedA = 0;
-int speedB = 0;
-void motorController() {
-
-  if (analogRead(potAPin) < 512) {
-    speedA = map(speedA, 512, 0, 850, 1023);
-    motorADir = 1;
-  } else {
-    speedA = map(speedA, 512, 1023, 850, 1023);
-    motorADir = 0;
-  }
-  analogWrite(motorASpeed, speedA);
-  digitalWrite(L293D_AA, 1 - motorADir);
-  digitalWrite(L293D_AB, motorADir);
-
-  if (analogRead(potBPin) < 512) {
-    speedB = map(speedB, 512, 0, 850, 1023);
-    motorBDir = 1;//
-  } else {
-    speedB = map(speedB, 512, 1023, 850, 1023);
-    motorBDir = 0;
+  if(!adc.init()){
+    Serial.println("ADS1115 not connected!");
   }
 
-  analogWrite(motorBSpeed, speedB);
-  digitalWrite(L293D_BA, 1 - motorBDir);
-  digitalWrite(L293D_BB, motorBDir);
+  adc.setVoltageRange_mV(ADS1115_RANGE_6144); //comment line/change parameter to change range
+
+  adc.setCompareChannels(ADS1115_COMP_0_GND); //comment line/change parameter to change channel
+
+  adc.setMeasureMode(ADS1115_CONTINUOUS); //comment line/change parameter to change mode
+
+  float coef[8] = { 1., 1., 1., 1., 1., 1., 1., 1.};
+
+  // Set the coefficients
+  fir.setFilterCoeffs(coef);
+
+  Serial.print("Gain set: ");
+  Serial.println(fir.getGain());
+
+  Serial.println("ADS1115 Example Sketch - Continuous Mode");
+  Serial.println("All values in volts");
+  Serial.println();
 }
 
-void printSensor(String sensor, float value) {
-  //static uint32_t prev_ms = micros();
-  Serial.println(sensor);
-  //Serial.println("SC:");
-  //Serial.println(startColor);
-  //Serial.println("DT:");
-  //Serial.println((micros() - prev_ms));
+void loop() {
+  float voltage = 0.0;
+  voltage = readChannel(ADS1115_COMP_1_GND);
+  float pp = fir.processReading(voltage);
   Serial.println("B:");
-  Serial.println(value);
+  Serial.println(voltage,2);
+}
 
-  //prev_ms = micros();
+float readChannel(ADS1115_MUX channel) {
+  float voltage = 0.0;
+  adc.setCompareChannels(channel);
+  voltage = adc.getResult_V();
+  return voltage;
 }

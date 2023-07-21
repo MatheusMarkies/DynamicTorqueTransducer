@@ -127,8 +127,7 @@ public class SerialRunnable implements SerialPortPacketListener, Runnable {
                                     controller.getDataManager()
                                             .changeSensorStats(
                                                     readingSensorIndex,
-                                                    Double.parseDouble(inputString),
-                                                    2
+                                                    Double.parseDouble(inputString)
                                             );
                                    getReadType = true;
                                 break;

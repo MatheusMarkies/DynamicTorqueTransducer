@@ -39,7 +39,7 @@ public class  Sensor {
     public Sensor() {
     //System.err.println("Create new Sensor!");
     }
-
+    boolean lock = false;
     double oldDiscrepancy = 0;
     public boolean pulseRegister(double lightValue){
         LocalTime localTimeNow = LocalTime.now();
@@ -57,7 +57,9 @@ public class  Sensor {
 */
         globalDeltaTime = Date.from(instant).getTime()-startTime.getTime();
         previousAddedTime = (Date.from(instant));
-
+        if(lock)
+        sensorPosition += 360/3;
+        System.out.println("sensorPosition: "+sensorPosition);
         this.lightValue = lightValue;
         this.lightValueHistory.add(lightValue);
         return addPulse();
@@ -81,24 +83,26 @@ public class  Sensor {
         this.pulseCounter = pulseCounter;
     }
 
-    boolean lock = false;
-
     public boolean addPulse() {
 
         if (transducer != null) {
-            int tracks = (int)transducer.getTracksNumber().getValue();
+            int tracks = 3;//(int)transducer.getTracksNumber().getValue();
             if((pulseCounter >= tracks)) {
                 this.pulseCounter = 0;
                 sensorPosition = 0;
-                //System.out.println("Volta Completa " + (getRotationDeltaTime()/1000));
-                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss.SSSSSSSSS");
+
                 LocalTime localTimeNow = LocalTime.now();
-
                 LocalDateTime localTime = localTimeNow.atDate(LocalDate.now());
-
                 Instant instant = localTime.atZone(ZoneId.systemDefault()).toInstant();
 
+                double instatTime = Date.from(instant).getTime();
+
+                setRotationDeltaTime(instatTime-rotationAddedTime.getTime());
+
+                System.out.println("Volta Completa " + (6000/getRotationDeltaTime()));
+
                 rotationAddedTime = Date.from(instant);
+                lock = true;
                 return true;
             }
         }

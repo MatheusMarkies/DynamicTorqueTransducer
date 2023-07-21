@@ -78,7 +78,7 @@ public class SensorDebugCharts implements Initializable {
             scheduledExecutorService.scheduleAtFixedRate(() -> {
                 Platform.runLater(() -> {
                     reset();
-                    int chartRange = 100;
+                    int chartRange = 500;
                         XYChart.Series<String, Double> blueSeries = new XYChart.Series<String, Double>();
                         blueSeries.getData().addAll(addEntityBlueToChart(true,chartRange));
                         XYChart.Series<String, Double> redSeries = new XYChart.Series<String, Double>();
