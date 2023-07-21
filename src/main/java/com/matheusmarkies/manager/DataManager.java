@@ -133,6 +133,8 @@ public class DataManager {
     int pulse = 0;
     double changeRate = 0;
     int rotation;
+    int lenght;
+    double avv;
     void changeSensorInfo(double brightness, Sensor currentSensor) {
         double oldSensorBrightness = 0;
         AxleData axleData = new AxleData();
@@ -141,20 +143,24 @@ public class DataManager {
         if (brightness != oldSensorBrightness && Math.abs((brightness - oldSensorBrightness)) > 0.008)
             changeRate = (brightness - oldSensorBrightness) / Math.abs((brightness - oldSensorBrightness));
 
-        if (changeRate >= 1) {
+        avv+=brightness;
+        lenght++;
+        //System.out.println(avv/lenght);
+
+        if (brightness >= 3.9) {
             if (currentCondition == Condition.NONE)
                 currentCondition = Condition.INCREASE;
             else if (currentCondition == Condition.DECREASE) {
-                System.out.println("valley");
+                //System.out.println("valley");
                 currentSensor.addValley();
                 currentSensor.setPulseCounter(currentSensor.getPulseCounter()+1);
                 currentCondition = Condition.INCREASE;
             }
-        } else if (changeRate <= -1) {
+        } else if (brightness < 3.9) {
             if (currentCondition == Condition.NONE)
                 currentCondition = Condition.DECREASE;
             else if (currentCondition == Condition.INCREASE) {
-                System.out.println("peak");
+                //System.out.println("peak");
                 currentSensor.addPeak();
                 currentCondition = Condition.DECREASE;
             }

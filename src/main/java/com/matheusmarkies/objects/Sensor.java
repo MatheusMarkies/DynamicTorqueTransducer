@@ -59,7 +59,7 @@ public class  Sensor {
         previousAddedTime = (Date.from(instant));
         if(lock)
         sensorPosition += 360/3;
-        System.out.println("sensorPosition: "+sensorPosition);
+        //System.out.println("sensorPosition: "+sensorPosition);
         this.lightValue = lightValue;
         this.lightValueHistory.add(lightValue);
         return addPulse();
@@ -99,7 +99,8 @@ public class  Sensor {
 
                 setRotationDeltaTime(instatTime-rotationAddedTime.getTime());
 
-                System.out.println("Volta Completa " + (6000/getRotationDeltaTime()));
+                double rpm = (double) Math.round((60000 / getRotationDeltaTime()) * 100) /100;
+                System.out.println("Volta Completa " + rpm+" RPM");
 
                 rotationAddedTime = Date.from(instant);
                 lock = true;
